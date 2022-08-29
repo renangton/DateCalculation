@@ -12,8 +12,22 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+    services:
+      mysql:
+        image: mysql:8.0.28
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: kagiu310Fuwauu8
+          MYSQL_DATABASE: date_calculation
+          MYSQL_USER: kuma
+          MYSQL_PASSWORD: 2203
+        options: --health-cmd "mysqladmin ping -h localhost" --health-interval 20s --health-timeout 10s --health-retries 10
+        
     steps:
+      - name: exec datasets.sql
+        run: |
+          mysql -h 127.0.0.1 --port 3306 -u root -pkagiu310Fuwauu8 -e "$(cat $(find ./ -name datasets.sql))"
       - uses: actions/checkout@v3
       - name: Set up JDK 11
         uses: actions/setup-java@v3
@@ -25,4 +39,4 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
-          arguments: build 
+          arguments: build
